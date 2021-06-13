@@ -20,7 +20,7 @@ type LoginMsg struct {
 
 // "接收登录信息"的消息类型
 type LoginResMsg struct {
-	Code  int    `json:"code"`  // 错误码
+	Code  int    `json:"code"`  // 状态码, 500表示失败, 200表示成功
 	Error string `json:"error"` // 错误信息
 }
 

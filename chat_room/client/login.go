@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"net"
 
-	"go.mod/chat_room/message"
+	"chat_room/client/message"
 )
 
 func login(userId int, userPwd string) (err error) {
