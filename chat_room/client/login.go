@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/binary"
 	"encoding/json"
 	"fmt"
 	"net"
@@ -44,22 +43,25 @@ func login(userId int, userPwd string) (err error) {
 		return
 	}
 
-	var buf [4]byte // 一个uint32类型是4个字节
-	// 先发送消息的长度,发送前需要用下面函数把数字类型转换成字节序, 转换结果存在buf
-	binary.BigEndian.PutUint32(buf[0:4], uint32(len(data)))
-	_, err = conn.Write(buf[0:4])
+	err = writePkg(conn, data)
 	if err != nil {
-		fmt.Println("conn.Write head err = ", err)
+		fmt.Println("login writePkg err = ", err)
+		return
+	}
+	fmt.Printf("向主机 %s 发送长度为 %d 数据, 内容是 %s\n", conn.RemoteAddr().String(), len(data), string(data))
+
+	msg, err = readPkg(conn)
+	var loginResMsg message.LoginResMsg
+	err = json.Unmarshal([]byte(msg.Data), &loginResMsg)
+	if err != nil {
+		fmt.Println("json.Unmarshal err = ", err)
 		return
 	}
 
-	// 发送消息体
-	_, err = conn.Write((data))
-	if err != nil {
-		fmt.Println("conn.Write body err = ", err)
-		return
+	if loginResMsg.Code == 200 {
+		fmt.Println("登录成功")
+	} else {
+		fmt.Println("登录失败, err = ", loginResMsg.Error)
 	}
-
-	fmt.Printf("向服务器发送 %d 长度的数据, 内容是 %s\n", len(data), string(data))
 	return
 }

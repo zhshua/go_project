@@ -44,12 +44,8 @@ func main() {
 		fmt.Println("请输入用户密码")
 		fmt.Scanf("%s\n", &userPwd)
 
-		err := login(userId, userPwd)
-		if err != nil {
-			fmt.Println("登录失败")
-		} else {
-			fmt.Println("登录成功")
-		}
+		login(userId, userPwd)
+
 	} else if key == 2 {
 		fmt.Println("注册用户的逻辑")
 	}
