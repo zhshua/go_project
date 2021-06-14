@@ -1,10 +1,12 @@
+/* 存放通用工具方法 */
+
 package utils
 
 import (
-	"chat_room/message"
 	"encoding/binary"
 	"encoding/json"
 	"fmt"
+	"go_project/chat_room/message"
 	"net"
 )
 

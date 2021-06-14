@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"go_project/chat_room/client/process"
 	"os"
 )
 
@@ -13,9 +14,8 @@ var userPwd string
 
 func main() {
 	var key int
-	var loop bool = true
 
-	for loop {
+	for true {
 		fmt.Println("-------------欢迎登录多人聊天系统-------------")
 		fmt.Println("\t\t\t 1 登录聊天室")
 		fmt.Println("\t\t\t 2 注册账号")
@@ -25,28 +25,24 @@ func main() {
 		switch key {
 		case 1:
 			fmt.Println("登录聊天室")
-			loop = false
+			fmt.Println("请输入用户id")
+			fmt.Scanf("%d\n", &userId)
+
+			fmt.Println("请输入用户密码")
+			fmt.Scanf("%s\n", &userPwd)
+
+			// 创建一个UserProcess实例
+			up := &process.UserProcess{}
+			up.Login(userId, userPwd)
+
 		case 2:
 			fmt.Println("注册账号")
-			loop = false
+
 		case 3:
 			fmt.Println("退出系统")
 			os.Exit(0)
 		default:
 			fmt.Println("输入有误请重新输入")
 		}
-	}
-
-	if key == 1 {
-		fmt.Println("请输入用户id")
-		fmt.Scanf("%d\n", &userId)
-
-		fmt.Println("请输入用户密码")
-		fmt.Scanf("%s\n", &userPwd)
-
-		login(userId, userPwd)
-
-	} else if key == 2 {
-		fmt.Println("注册用户的逻辑")
 	}
 }

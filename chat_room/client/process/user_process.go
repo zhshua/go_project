@@ -1,17 +1,22 @@
-package main
+package process
 
 import (
 	"encoding/json"
 	"fmt"
+	"go_project/chat_room/client/utils"
+	"go_project/chat_room/message"
 	"net"
-
-	"chat_room/client/message"
 )
 
-func login(userId int, userPwd string) (err error) {
+// 定义UserProcess类
+type UserProcess struct{
+
+}
+
+func (up *UserProcess)Login(userId int, userPwd string) (err error) {
 
 	// 连接到服务器
-	conn, err := net.Dial("tcp", "172.22.251.127:8889")
+	conn, err := net.Dial("tcp", "172.21.6.187:8889")
 	if err != nil {
 		fmt.Println("net.Dial err = ", err)
 		return
@@ -43,14 +48,20 @@ func login(userId int, userPwd string) (err error) {
 		return
 	}
 
-	err = writePkg(conn, data)
+	// 创建一个Transfer实例
+	tf := &utils.Transfer{
+		Conn: conn,
+		Buf: make([]byte, 4096),
+	}
+
+	err = tf.WritePkg(data)
 	if err != nil {
 		fmt.Println("login writePkg err = ", err)
 		return
 	}
 	fmt.Printf("向主机 %s 发送长度为 %d 数据, 内容是 %s\n", conn.RemoteAddr().String(), len(data), string(data))
 
-	msg, err = readPkg(conn)
+	msg, err = tf.ReadPkg()
 	var loginResMsg message.LoginResMsg
 	err = json.Unmarshal([]byte(msg.Data), &loginResMsg)
 	if err != nil {
@@ -59,7 +70,13 @@ func login(userId int, userPwd string) (err error) {
 	}
 
 	if loginResMsg.Code == 200 {
-		fmt.Println("登录成功")
+		// fmt.Println("登录成功")
+		go serverProcessMsg(conn)
+
+		// 显示登录成功后的二级菜单
+		for{
+			ShowMenu()
+		}
 	} else {
 		fmt.Println("登录失败, err = ", loginResMsg.Error)
 	}

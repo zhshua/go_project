@@ -1,11 +1,13 @@
+/* 主控器, 去分发各类处理逻辑 */
+
 package main
 
 import (
-	"chat_room/message"
-	"chat_room/server/process"
-	"chat_room/server/utils"
 	"errors"
 	"fmt"
+	"go_project/chat_room/message"
+	"go_project/chat_room/server/process"
+	"go_project/chat_room/server/utils"
 	"io"
 	"net"
 )
@@ -39,6 +41,7 @@ func (p *Processor) process() (err error) {
 		// 创建传输数据实例
 		tf := &utils.Transfer{
 			Conn: p.Conn,
+			Buf: make([]byte, 4096),
 		}
 
 		var msg message.Message

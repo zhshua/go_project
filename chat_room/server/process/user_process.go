@@ -1,14 +1,18 @@
+/* 处理和用户相关的逻辑 */
+
 package process
 
 import (
-	"chat_room/message"
-	"chat_room/server/utils"
+
 	"encoding/json"
 	"fmt"
+	"go_project/chat_room/message"
+	"go_project/chat_room/server/utils"
 	"net"
 )
 
 // 定义处理用户例程类
+
 type UserProcess struct {
 	Conn net.Conn //连接
 }
