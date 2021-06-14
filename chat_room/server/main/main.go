@@ -8,7 +8,7 @@ import (
 func main() {
 	// 启动server程序监听套接字
 	fmt.Println("server启动中...")
-	Listen, err := net.Listen("tcp", "172.21.6.187:8889")
+	Listen, err := net.Listen("tcp", "172.22.251.127:8889")
 	if err != nil {
 		fmt.Println("net.Listen err = ", err)
 		return

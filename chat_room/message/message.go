@@ -14,8 +14,9 @@ type Message struct {
 
 // "登录"的消息类型
 type LoginMsg struct {
-	UserId  int    `json:"userId"`  // 登录用户id
-	UserPwd string `json:"userPwd"` // 登录用户密码
+	UserId   int    `json:"userId"`   // 登录用户id
+	UserPwd  string `json:"userPwd"`  // 登录用户密码
+	UserName string `json:"userName"` // 登录的用户名
 }
 
 // "接收登录信息"的消息类型
