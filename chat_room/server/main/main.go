@@ -3,9 +3,18 @@ package main
 import (
 	"fmt"
 	"net"
+	"time"
 )
 
+func init() {
+	// 初始化redis连接池
+	initPool("localhost:6379", 16, 0, 300*time.Second)
+	// 初始化创建UserDao实例(需要在redisPool创建之后)
+	initUserDao()
+}
+
 func main() {
+
 	// 启动server程序监听套接字
 	fmt.Println("server启动中...")
 	Listen, err := net.Listen("tcp", "172.22.251.127:8889")
