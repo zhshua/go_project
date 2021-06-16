@@ -2,9 +2,10 @@ package message
 
 // 定义几个消息类型常量
 const (
-	LoginMsgType    = "LoginMsg"
-	LoginResMsgType = "LoginResMsg"
-	RegisterMsgType = "RegisterMsg"
+	LoginMsgType       = "LoginMsg"
+	LoginResMsgType    = "LoginResMsg"
+	RegisterMsgType    = "RegisterMsg"
+	RegisterResMsgType = "RegisterResMsg"
 )
 
 type Message struct {
@@ -19,13 +20,19 @@ type LoginMsg struct {
 	UserName string `json:"userName"` // 登录的用户名
 }
 
-// "接收登录信息"的消息类型
+// "回应登录信息"的消息类型
 type LoginResMsg struct {
-	Code  int    `json:"code"`  // 状态码, 500表示失败, 200表示成功
+	Code  int    `json:"code"`  // 状态码
 	Error string `json:"error"` // 错误信息
 }
 
 // "注册"消息的类型
 type RegisterMsg struct {
-	//...
+	User User `json:"user"` // User结构体
+}
+
+// "回应注册信息"的消息类型
+type RegisterResMsg struct {
+	Code  int    `json:"code"`  // 状态码
+	Error string `json:"error"` // 错误信息
 }

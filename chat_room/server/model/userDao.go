@@ -3,6 +3,7 @@ package model
 import (
 	"encoding/json"
 	"fmt"
+	"go_project/chat_room/common/message"
 
 	"github.com/garyburd/redigo/redis"
 )
@@ -27,7 +28,7 @@ func NewUserDao(pool *redis.Pool) (dao *UserDao) {
 }
 
 // 通过给定id查询是否有这个用户
-func (dao *UserDao) getUserById(conn redis.Conn, id int) (user *User, err error) {
+func (dao *UserDao) getUserById(conn redis.Conn, id int) (user *message.User, err error) {
 	// 通过给定id去查询用户
 	res, err := redis.String(conn.Do("hget", "users", id))
 	if err != nil {
@@ -38,7 +39,7 @@ func (dao *UserDao) getUserById(conn redis.Conn, id int) (user *User, err error)
 	}
 
 	// 对取到的json进行反序列化,得到user结构体
-	user = &User{}
+	user = &message.User{}
 	err = json.Unmarshal([]byte(res), user)
 	if err != nil {
 		fmt.Println("json.Unmarshal err = ", err)
@@ -48,7 +49,7 @@ func (dao *UserDao) getUserById(conn redis.Conn, id int) (user *User, err error)
 }
 
 // 登录判断
-func (dao *UserDao) Login(userId int, userPwd string) (user *User, err error) {
+func (dao *UserDao) Login(userId int, userPwd string) (user *message.User, err error) {
 
 	// 从redis连接池中取出一个连接
 	conn := dao.Pool.Get()
@@ -61,6 +62,36 @@ func (dao *UserDao) Login(userId int, userPwd string) (user *User, err error) {
 
 	if user.UserPwd != userPwd {
 		err = ERROR_USER_PWD
+		return
+	}
+	return
+}
+
+// 注册判断
+func (dao *UserDao) Register(user *message.User) (err error) {
+
+	// 从redis连接池中取出一个连接
+	conn := dao.Pool.Get()
+	defer conn.Close()
+
+	_, err = dao.getUserById(conn, user.UserId)
+	// err = nil说明用户在redis里
+	if err == nil {
+		err = ERROR_USER_EXIST
+		return
+	}
+
+	// 注册用户,先序列化user
+	data, err := json.Marshal(user)
+	if err != nil {
+		fmt.Println("json.Marshal err = ", err)
+		return
+	}
+
+	// 存入数据库
+	_, err = conn.Do("hset", "users", user.UserId, string(data))
+	if err != nil {
+		fmt.Println("conn.Do err = ", err)
 		return
 	}
 	return

@@ -6,16 +6,16 @@ import (
 	"os"
 )
 
-// 保存用户id
-var userId int
-
-// 保存用户密码
-var userPwd string
+var (
+	userId   int    // 保存用户id
+	userPwd  string // 保存用户密码
+	userName string // 保存用户昵称
+)
 
 func main() {
 	var key int
 
-	for true {
+	for {
 		fmt.Println("-------------欢迎登录多人聊天系统-------------")
 		fmt.Println("\t\t\t 1 登录聊天室")
 		fmt.Println("\t\t\t 2 注册账号")
@@ -37,7 +37,18 @@ func main() {
 
 		case 2:
 			fmt.Println("注册账号")
+			fmt.Println("请输入用户id")
+			fmt.Scanf("%d\n", &userId)
 
+			fmt.Println("请输入用户密码")
+			fmt.Scanf("%s\n", &userPwd)
+
+			fmt.Println("请输入用户昵称")
+			fmt.Scanf("%s\n", &userName)
+
+			// 创建一个UserProcess实例
+			up := &process.UserProcess{}
+			up.Register(userId, userPwd, userName)
 		case 3:
 			fmt.Println("退出系统")
 			os.Exit(0)

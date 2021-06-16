@@ -5,7 +5,7 @@ package main
 import (
 	"errors"
 	"fmt"
-	"go_project/chat_room/message"
+	"go_project/chat_room/common/message"
 	"go_project/chat_room/server/process"
 	"go_project/chat_room/server/utils"
 	"io"
@@ -29,6 +29,11 @@ func (p *Processor) serverProcessMsg(msg message.Message) (err error) {
 		err = up.ServerProcessLogin(msg)
 	case message.RegisterMsgType:
 		// 处理注册消息
+		// 创建一个UserProcess实例
+		up := &process.UserProcess{
+			Conn: p.Conn,
+		}
+		err = up.ServerProcessRegister(msg)
 	default:
 		err = errors.New("不支持的消息类型")
 		return
@@ -41,7 +46,7 @@ func (p *Processor) process() (err error) {
 		// 创建传输数据实例
 		tf := &utils.Transfer{
 			Conn: p.Conn,
-			Buf: make([]byte, 4096),
+			Buf:  make([]byte, 4096),
 		}
 
 		var msg message.Message

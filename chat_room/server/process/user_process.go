@@ -5,7 +5,7 @@ package process
 import (
 	"encoding/json"
 	"fmt"
-	"go_project/chat_room/message"
+	"go_project/chat_room/common/message"
 	"go_project/chat_room/server/model"
 	"go_project/chat_room/server/utils"
 	"net"
@@ -79,4 +79,61 @@ func (up *UserProcess) ServerProcessLogin(msg message.Message) (err error) {
 	}
 	return
 
+}
+
+func (up *UserProcess) ServerProcessRegister(msg message.Message) (err error) {
+	// 取出msg.data字段,并把它反序列化为结构体,得到login类型的消息结构体
+	var registerMsg message.RegisterMsg
+	err = json.Unmarshal([]byte(msg.Data), &registerMsg)
+	if err != nil {
+		fmt.Println("json.Unmarshal err = ", err)
+		return
+	}
+
+	// 定义回应登录消息的结构体
+	var registerResMsg message.RegisterResMsg
+
+	// 判断注册是否成功
+	err = model.MyUserDao.Register(&registerMsg.User)
+	if err != nil {
+		if err == model.ERROR_USER_EXIST {
+			registerResMsg.Code = 505
+			registerResMsg.Error = model.ERROR_USER_EXIST.Error()
+		} else {
+			registerResMsg.Code = 506
+			registerResMsg.Error = "注册时发生未知错误"
+		}
+	} else {
+		registerResMsg.Code = 200
+	}
+
+	// 将回应类型结构体序列化
+	data, err := json.Marshal(registerResMsg)
+	if err != nil {
+		fmt.Println("json.Marshal err = ", err)
+		return
+	}
+
+	// 定义消息结构体
+	resMsg := message.Message{
+		Type: message.RegisterResMsgType,
+		Data: string(data),
+	}
+	// 将消息结构体序列化
+	data, err = json.Marshal(resMsg)
+	if err != nil {
+		fmt.Println("json.Marshal err = ", err)
+		return
+	}
+
+	// 创建一个发送数据的实例去发送数据
+	tf := &utils.Transfer{
+		Conn: up.Conn,
+		Buf:  make([]byte, 4096),
+	}
+	err = tf.WritePkg(data)
+	if err != nil {
+		fmt.Println("server writePkg err = ", err)
+	}
+	return
 }

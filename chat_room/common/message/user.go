@@ -1,4 +1,4 @@
-package model
+package message
 
 // 定义用户类型
 type User struct {

@@ -6,7 +6,7 @@ import (
 	"encoding/binary"
 	"encoding/json"
 	"fmt"
-	"go_project/chat_room/message"
+	"go_project/chat_room/common/message"
 	"net"
 )
 
