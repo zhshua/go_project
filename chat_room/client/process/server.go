@@ -1,14 +1,16 @@
 package process
 
 import (
+	"encoding/json"
 	"fmt"
 	"go_project/chat_room/client/utils"
+	"go_project/chat_room/common/message"
 	"net"
 	"os"
 )
 
 // 显示登录成功的界面
-func ShowMenu(){
+func ShowMenu() {
 	fmt.Println("---------恭喜xxx登录成功---------")
 	fmt.Println("---------1. 显示在线用户列表---------")
 	fmt.Println("---------2. 发送消息---------")
@@ -18,9 +20,9 @@ func ShowMenu(){
 	var key int
 	fmt.Scanf("%d\n", &key)
 
-	switch key{
+	switch key {
 	case 1:
-		fmt.Println("显示在线用户列表")
+		ShowOnlineUser()
 	case 2:
 		fmt.Println("发送消息")
 	case 3:
@@ -34,11 +36,11 @@ func ShowMenu(){
 }
 
 // 和服务器保持通讯
-func serverProcessMsg(conn net.Conn){
+func serverProcessMsg(conn net.Conn) {
 	// 创建一个Transfer实例
 	tf := &utils.Transfer{
 		Conn: conn,
-		Buf: make([]byte, 4096),
+		Buf:  make([]byte, 4096),
 	}
 	for {
 		fmt.Println("偷偷等待客户端的消息")
@@ -47,7 +49,17 @@ func serverProcessMsg(conn net.Conn){
 			fmt.Println("tf.ReadPkg err = ", err)
 			return
 		}
-		// 等待下一步处理
-		fmt.Printf("读取到消息msg = %v\n", msg)
+
+		switch msg.Type {
+		// 有人上线
+		case message.NotifyUserStatysMsgType:
+			// 1.取出NotifyUserStatysMsg
+			var notifyUserStatysMsgType message.NotifyUserStatysMsg
+			json.Unmarshal([]byte(msg.Data), &notifyUserStatysMsgType)
+			// 2.把用户信息保存到客户端维护的map中
+			updateUserStatus(&notifyUserStatysMsgType)
+		default:
+			fmt.Println("服务器端返回了未知类型的消息")
+		}
 	}
 }

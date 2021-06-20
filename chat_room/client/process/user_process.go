@@ -70,6 +70,25 @@ func (up *UserProcess) Login(userId int, userPwd string) (err error) {
 
 	if loginResMsg.Code == 200 {
 		// fmt.Println("登录成功")
+
+		// 显示当前在线用户列表
+		fmt.Println("当前用户列表如下：")
+		for _, v := range loginResMsg.UsersId {
+			if v == userId {
+				continue
+			}
+
+			fmt.Println("用户Id:\t", v)
+
+			// 将在线用户放进客户端维护的onlineUsers中
+			user := &message.User{
+				UserId:     v,
+				UserStatus: message.UserOnline,
+			}
+			onlineUsers[v] = user
+		}
+		fmt.Print("\n\n")
+
 		go serverProcessMsg(conn)
 
 		// 显示登录成功后的二级菜单
