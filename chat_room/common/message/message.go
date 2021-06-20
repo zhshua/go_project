@@ -7,6 +7,7 @@ const (
 	RegisterMsgType         = "RegisterMsg"
 	RegisterResMsgType      = "RegisterResMsg"
 	NotifyUserStatysMsgType = "NotifyUserStatysMsg"
+	SmsMsgType              = "SmsMsg"
 )
 
 // 定义几个User状态
@@ -50,4 +51,10 @@ type RegisterResMsg struct {
 type NotifyUserStatysMsg struct {
 	UserId int `json:"userId"`
 	Status int `json:"status"`
+}
+
+// 定义短消息类型
+type SmsMsg struct {
+	User           //匿名结构体
+	Content string `json:"content"` // 消息文本内容
 }

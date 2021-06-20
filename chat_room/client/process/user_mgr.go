@@ -2,10 +2,12 @@ package process
 
 import (
 	"fmt"
+	"go_project/chat_room/client/model"
 	"go_project/chat_room/common/message"
 )
 
 var onlineUsers map[int]*message.User = make(map[int]*message.User, 10)
+var CurUser model.CurUser // 在用户登录
 
 // 编写一个方法，处理返回的NotifyUserStatysMsg消息
 func updateUserStatus(notifyUserStatysMsg *message.NotifyUserStatysMsg) {

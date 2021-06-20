@@ -18,13 +18,16 @@ func ShowMenu() {
 	fmt.Println("---------4. 退出系统---------")
 	fmt.Println("请选择(1-4):")
 	var key int
+	var content string
+	smsProcess := SmsProcess{}
 	fmt.Scanf("%d\n", &key)
-
 	switch key {
 	case 1:
 		ShowOnlineUser()
 	case 2:
-		fmt.Println("发送消息")
+		fmt.Println("你想对大家说什么:)")
+		fmt.Scanf("%s\n", &content)
+		smsProcess.SendGroupMsg(content)
 	case 3:
 		fmt.Println("聊天历史记录")
 	case 4:
@@ -58,6 +61,9 @@ func serverProcessMsg(conn net.Conn) {
 			json.Unmarshal([]byte(msg.Data), &notifyUserStatysMsgType)
 			// 2.把用户信息保存到客户端维护的map中
 			updateUserStatus(&notifyUserStatysMsgType)
+		// 有人群发消息
+		case message.SmsMsgType:
+			OutputGroupMsg(&msg)
 		default:
 			fmt.Println("服务器端返回了未知类型的消息")
 		}
